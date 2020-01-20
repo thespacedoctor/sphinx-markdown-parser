@@ -10,6 +10,9 @@ from markdown import util
 from pydash import _
 import re
 import yaml
+from lxml import etree
+from io import StringIO, BytesIO
+from docutils.utils import new_document
 
 __all__ = ['MarkdownParser']
 
@@ -18,9 +21,11 @@ b, big, i, small, tt
 abbr, acronym, cite, code, dfn, em, kbd, strong, samp, var
 a, bdo, br, img, map, object, q, script, span, sub, sup
 button, input, label, select, textarea
-""".replace(",","").split())
-INVALID_ANCHOR_CHARS = re.compile("[^-_:.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]")
+""".replace(",", "").split())
+INVALID_ANCHOR_CHARS = re.compile(
+    "[^-_:.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]")
 MAYBE_HTML_TAG = re.compile("<([a-z]+)")
+
 
 def to_html_anchor(s):
     if not s:
@@ -36,8 +41,7 @@ class Markdown(markdown.Markdown):
 
     def parse(self, source):
         """
-        Like super.convert() but returns the parse tree instead of doing
-        postprocessing.
+        Like super.convert() but returns the parse tree
         """
 
         # Fixup the source text
@@ -53,6 +57,9 @@ class Markdown(markdown.Markdown):
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
+        # newlines = []
+        # newlines[:] = [n + "  " for n in self.lines]
+        # self.lines = newlines
         for prep in self.preprocessors:
             self.lines = prep.run(self.lines)
 
@@ -65,7 +72,34 @@ class Markdown(markdown.Markdown):
             if newRoot is not None:
                 root = newRoot
 
+        # Serialize _properly_.  Strip top-level tags.
+        output = self.serializer(root)
+        if self.stripTopLevelTags:
+            try:
+                start = output.index(
+                    '<%s>' % self.doc_tag) + len(self.doc_tag) + 2
+                end = output.rindex('</%s>' % self.doc_tag)
+                output = output[start:end].strip()
+            except ValueError:  # pragma: no cover
+                if output.strip().endswith('<%s />' % self.doc_tag):
+                    # We have an empty document
+                    output = ''
+                else:
+                    # We have a serious problem
+                    raise ValueError('Markdown failed to strip top-level '
+                                     'tags. Document=%r' % output.strip())
+
+        # Run the text post-processors
+        for pp in self.postprocessors:
+            output = pp.run(output)
+
+        # CONVERT THE HTML BACK TO ROOT
+        parser = etree.HTMLParser()
+        tree = etree.parse(StringIO(output.strip()), parser)
+        root = tree.getroot()
+
         return root
+
 
 class MarkdownParser(parsers.Parser):
     """Docutils parser for Markdown"""
@@ -74,7 +108,8 @@ class MarkdownParser(parsers.Parser):
     translate_section_name = None
 
     default_config = {
-        'extensions': []
+        'extensions': [],
+        'extension_configs': {}
     }
 
     def __init__(self, config={}):
@@ -93,7 +128,21 @@ class MarkdownParser(parsers.Parser):
         self.setup_parse(inputstring, document)
         frontmatter = self.get_frontmatter(inputstring)
 
-        self.md = Markdown(extensions=self.config.get('extensions'))
+        inputstring = inputstring.replace("{{TOC}}", "1234TOC1234")
+
+        # ALLOW FOR MMD STYLE SUP/SUB-SCRIPTS
+        regex = re.compile(r'([!~]*\S)~(\S)([!~]*\n)')
+        inputstring = regex.sub(r"\1~\2~\3", inputstring)
+        regex = re.compile(r'([!\^]*\S)\^(\S)([!\^]*\n)')
+        inputstring = regex.sub(r"\1^\2^\3", inputstring)
+
+        # ALLOW FOR CITATIONS TO SEMI-WORK (AS FOOTNOTES)
+        regex = re.compile(r'\[#(.*?)\]')
+        inputstring = regex.sub(r"[^cite\1]", inputstring)
+
+        self.md = Markdown(extensions=self.config.get(
+            'extensions'), extension_configs=self.config.get('extension_configs'))
+
         tree = self.md.parse(self.get_md(inputstring) + "\n")
         self.prep_raw_html()
 
@@ -107,10 +156,10 @@ class MarkdownParser(parsers.Parser):
         # to append >1 node (e.g. start_new_section) or pop a node
         self.parse_stack_w_old = 1
         self.walk_markdown_ast(tree)
-        #text = self.current_node.pformat()
-        #print("result:: ==== ")
-        #print(text[:min(len(text), text.find("<title>") + 200)])
-        #print("end result")
+        # text = self.current_node.pformat()
+        # print("result:: ==== ")
+        # print(text[:min(len(text), text.find("<title>") + 200)])
+        # print("end result")
 
         self.finish_parse()
 
@@ -146,7 +195,8 @@ class MarkdownParser(parsers.Parser):
             replacements[self.md.htmlStash.get_placeholder(i)] = html
         self.raw_html = replacements
         if replacements:
-            self.raw_html_k = re.compile("(" + "|".join(re.escape(k) for k in self.raw_html) + ")")
+            self.raw_html_k = re.compile(
+                "(" + "|".join(re.escape(k) for k in self.raw_html) + ")")
         else:
             self.raw_html_k = None
 
@@ -160,7 +210,10 @@ class MarkdownParser(parsers.Parser):
         return False
 
     def walk_markdown_ast(self, node):
-        n = node.tag.lower()
+        try:
+            n = node.tag.lower()
+        except:
+            return
         r_depth = len(self.parse_stack_r)
         self.parse_stack_w_old = len(self.parse_stack_w)
 
@@ -205,9 +258,11 @@ class MarkdownParser(parsers.Parser):
     def dispatch(self, entering, n, node, *args):
         fn_prefix = "visit" if entering else "depart"
         fn_name = "{0}_{1}".format(fn_prefix, n)
+
         def x(*args): return self.dispatch_default(entering, *args)
-        #if entering:
-        #    print(" " * len(self.parse_stack_r) * 2, node.tag, node.text[:40] if node.text else "")
+        # if entering:
+        # print(" " * len(self.parse_stack_r) * 2, node.tag, node.text[:40] if
+        # node.text else "")
         return getattr(self, fn_name, x)(node, *args)
 
     def dispatch_default(self, entering, node, *args):
@@ -219,7 +274,8 @@ class MarkdownParser(parsers.Parser):
         if not self.raw_html_k:
             text1 = text
         else:
-            text1 = self.raw_html_k.sub(lambda m: self.raw_html[m.group(0)], text)
+            text1 = self.raw_html_k.sub(
+                lambda m: self.raw_html[m.group(0)], text)
 
         strip_p = False
         if text1 == text:
@@ -235,7 +291,7 @@ class MarkdownParser(parsers.Parser):
                 text = text[8:]
                 langi = text.find('"')
                 lang = text[:langi]
-                text = text[langi+2:].rstrip("\n")
+                text = text[langi + 2:].rstrip("\n")
                 text = html.unescape(text)
                 content = nodes.literal_block(text, text, language=lang)
             else:
@@ -290,6 +346,20 @@ class MarkdownParser(parsers.Parser):
         assert isinstance(self.parse_stack_w[-1], nodes.section)
         return nodes.title()
 
+    def get_node_raw_html(self, node):
+        htmlText = etree.tostring(node, encoding="unicode")
+        try:
+            node.text = ''
+        except:
+            pass
+        try:
+            node.tail = ''
+        except:
+            pass
+        rawNode = nodes.raw(
+            '', htmlText, format='html')
+        return rawNode
+
     def visit_script(self, node):
         if node.attrib.get("type", "").split(";")[0] == "math/tex":
             node.attrib.pop("type")
@@ -307,6 +377,21 @@ class MarkdownParser(parsers.Parser):
                     "math/tex script with unknown parent: %s" % parent.tag)
         else:
             return IGNORE_ALL_CHILDREN
+
+    def visit_input(self, node):
+        return self.get_node_raw_html(node)
+
+    def visit_ins(self, node):
+        return self.get_node_raw_html(node)
+
+    def visit_del(self, node):
+        return self.get_node_raw_html(node)
+
+    def visit_mark(self, node):
+        return self.get_node_raw_html(node)
+
+    def visit_sub(self, node):
+        return self.get_node_raw_html(node)
 
     def visit_p(self, node):
         return nodes.paragraph()
@@ -355,6 +440,12 @@ class MarkdownParser(parsers.Parser):
 
     def visit_a(self, node):
         reference = nodes.reference()
+        ids = node.attrib.get("id", "")
+        if ids:
+            reference['ids'] = [node.attrib.pop("id")]
+        classes = node.attrib.get("classes", "")
+        if classes:
+            reference["classes"] = [node.attrib.pop("class")]
         href = node.attrib.pop('href', '')
         if href.endswith(".md"):
             href = href[:-3] + ".html"
@@ -362,19 +453,40 @@ class MarkdownParser(parsers.Parser):
         return reference
 
     def visit_ol(self, node):
-        return nodes.enumerated_list()
+        ol = nodes.enumerated_list()
+        ids = node.attrib.get("id", "")
+        if ids:
+            ol['ids'] = [node.attrib.pop("id")]
+        classes = node.attrib.get("classes", "")
+        if classes:
+            ol["classes"] = [node.attrib.pop("class")]
+        return ol
 
     def visit_ul(self, node):
-        return nodes.bullet_list()
+        ul = nodes.bullet_list()
+        ids = node.attrib.get("id", "")
+        if ids:
+            ul['ids'] = [node.attrib.pop("id")]
+        classes = node.attrib.get("classes", "")
+        if classes:
+            ul["classes"] = [node.attrib.pop("class")]
+        return ul
 
     def visit_li(self, node):
+        thisItem = nodes.list_item()
+        ids = node.attrib.get("id", "")
+        if ids:
+            thisItem['ids'] = [node.attrib.pop("id")]
+        classes = node.attrib.get("classes", "")
+        if classes:
+            thisItem["classes"] = [node.attrib.pop("class")]
         ch = list(node)
         # extra "paragraph" is needed to avoid breaking docutils assumptions
         if not ch or ch[0].tag in TAGS_INLINE:
-            self.append_node(nodes.list_item())
+            self.append_node(thisItem)
             return nodes.paragraph()
         else:
-            return nodes.list_item()
+            return thisItem
 
     def visit_img(self, node):
         image = nodes.image()
@@ -440,3 +552,34 @@ class MarkdownParser(parsers.Parser):
         if node.text:
             node.text = html.unescape(node.text)
         return nodes.literal_block()
+
+    def visit_abbr(self, node):
+        htmlText = html.unescape(node.text)
+        title = node.attrib.pop("title")
+        node.text = ''
+        htmlText = """<abbr title = '%(title)s'>%(htmlText)s</abbr>""" % locals()
+
+        abbr = nodes.raw(
+            '', htmlText, format='html')
+
+        return abbr
+
+    def visit_dl(self, node):
+        return nodes.definition_list()
+
+    def visit_dt(self, node):
+        if node.text:
+            node.text = html.unescape(node.text)
+        return nodes.term()
+
+    def visit_dd(self, node):
+        if node.text:
+            node.text = html.unescape(node.text)
+        return nodes.definition()
+
+    def visit_sup(self, node):
+        sup = nodes.superscript()
+        ids = node.attrib.get("id", "")
+        if ids:
+            sup['ids'] = [node.attrib.pop("id")]
+        return sup
