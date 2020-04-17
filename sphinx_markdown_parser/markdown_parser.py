@@ -502,6 +502,11 @@ class MarkdownParser(parsers.Parser):
     def visit_blockquote(self, node):
         return nodes.block_quote()
 
+    def visit_iframe(self, node):
+        if not node.text:
+            node.text = html.unescape("placeholder")
+        return self.get_node_raw_html(node)
+
     def visit_table(self, node):
         # docutils html writer crashes without tgroup/colspec
         table = nodes.table()
