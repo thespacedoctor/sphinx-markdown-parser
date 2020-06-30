@@ -80,6 +80,7 @@ todo_include_todos = False
 
 version = '0.0.5'
 
+
 def setup(app):
     app.add_source_suffix('.md', 'markdown')
     app.add_source_parser(MarkdownParser)

@@ -74,8 +74,12 @@ class AutoStructify(transforms.Transform):
         elif isinstance(ref.children[0], nodes.Text):
             title = ref.children[0].astext()
         uri = ref['refuri']
+
+        # IS THIS A LINK TO THE EXTERNAL WORLD?
         if uri.find('://') != -1:
             return (title, uri, None)
+
+        # IS THERE AN ANCHOR IN THIS INTERNAL LINK?
         anchor = None
         arr = uri.split('#')
         if len(arr) == 2:
@@ -84,24 +88,27 @@ class AutoStructify(transforms.Transform):
             return (title, uri, None)
         uri = arr[0]
 
+        # GENERATE THE ABSOLUTE AND RELATIVE PATHS
         abspath = os.path.abspath(os.path.join(self.file_dir, uri))
         relpath = os.path.relpath(abspath, self.root_dir)
+
+        # FIND THE EXTENSION TO THE PAGE/FILE - THIS IS FOR AutoStructify
         suffix = abspath.rsplit('.', 1)
         if len(suffix) == 2 and suffix[1] in AutoStructify.suffix_set and (
             os.path.exists(abspath) and abspath.startswith(self.root_dir)
         ):
-            # replace the path separator if running on non-UNIX environment
+            # REPLACE THE PATH SEPARATOR IF RUNNING ON NON-UNIX ENVIRONMENT
             if os.path.sep != '/':
                 relpath = relpath.replace(os.path.sep, '/')
             docpath = '/' + relpath.rsplit('.', 1)[0]
-            # rewrite suffix to html, this is suboptimal
+            # REWRITE SUFFIX TO HTML, THIS IS SUBOPTIMAL
             uri = docpath + '.html'
             if anchor is None:
                 return (title, uri, docpath)
             else:
                 return (title, uri + '#' + anchor, None)
         else:
-            # use url resolver
+            # USE URL RESOLVER
             if self.url_resolver:
                 uri = self.url_resolver(relpath)
             if anchor:

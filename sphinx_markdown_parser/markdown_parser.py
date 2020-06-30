@@ -136,6 +136,10 @@ class MarkdownParser(parsers.Parser):
         regex = re.compile(r'([!\^]*\S)\^(\S)([!\^]*\n)')
         inputstring = regex.sub(r"\1^\2^\3", inputstring)
 
+        # ALLOW FOR SPHINX :any: ROLE
+        # regex = re.compile(r'\[\[(.*?)\]\]')
+        # inputstring = regex.sub(r"£££££\1£££££", inputstring)
+
         # ALLOW FOR CITATIONS TO SEMI-WORK (AS FOOTNOTES)
         regex = re.compile(r'\[#(.*?)\]')
         inputstring = regex.sub(r"[^cite\1]", inputstring)
@@ -449,6 +453,11 @@ class MarkdownParser(parsers.Parser):
         href = node.attrib.pop('href', '')
         if href.endswith(".md"):
             href = href[:-3] + ".html"
+        if href.startswith("/"):
+            href = href[1:]
+        if not href.endswith(".html"):
+            if len(href.split(".")[-1]) > 3:
+                href = href + ".html"
         reference['refuri'] = href
         return reference
 
