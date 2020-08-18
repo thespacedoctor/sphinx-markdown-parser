@@ -455,9 +455,9 @@ class MarkdownParser(parsers.Parser):
             href = href[:-3] + ".html"
         if href.startswith("/"):
             href = href[1:]
-        if not href.endswith(".html"):
-            if len(href.split(".")[-1]) > 3:
-                href = href + ".html"
+        # if not href.endswith(".html"):
+        #     if len(href.split(".")[-1]) > 3:
+        #         href = href + ".html"
         reference['refuri'] = href
         return reference
 
