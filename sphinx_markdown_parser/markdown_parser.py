@@ -74,6 +74,7 @@ class Markdown(markdown.Markdown):
 
         # Serialize _properly_.  Strip top-level tags.
         output = self.serializer(root)
+
         if self.stripTopLevelTags:
             try:
                 start = output.index(
@@ -161,8 +162,12 @@ class MarkdownParser(parsers.Parser):
         self.parse_stack_w_old = 1
         self.walk_markdown_ast(tree)
         # text = self.current_node.pformat()
-        # print("result:: ==== ")
-        # print(text[:min(len(text), text.find("<title>") + 200)])
+        # if ":caption: Table of Contents" in text:
+        #     print("result:: ==== ")
+        #     print(text)
+        #     import time
+        #     time.sleep(3)
+        #     sys.exit(0)
         # print("end result")
 
         self.finish_parse()
@@ -192,6 +197,7 @@ class MarkdownParser(parsers.Parser):
         replacements = OrderedDict()
         for i in range(self.md.htmlStash.html_counter):
             html = self.md.htmlStash.rawHtmlBlocks[i]
+
             if self.isblocklevel(html):
                 replacements["<p>%s</p>" %
                              (self.md.htmlStash.get_placeholder(i))] = \
@@ -275,6 +281,7 @@ class MarkdownParser(parsers.Parser):
                 "markdown node with unknown tag: %s" % node.tag, nodes.Text(node.text))
 
     def append_text(self, text):
+
         if not self.raw_html_k:
             text1 = text
         else:
@@ -282,6 +289,7 @@ class MarkdownParser(parsers.Parser):
                 lambda m: self.raw_html[m.group(0)], text)
 
         strip_p = False
+
         if text1 == text:
             content = nodes.Text(text)
 
@@ -297,6 +305,7 @@ class MarkdownParser(parsers.Parser):
                 lang = text[:langi]
                 text = text[langi + 2:].rstrip("\n")
                 text = html.unescape(text)
+
                 content = nodes.literal_block(text, text, language=lang)
             else:
                 self.document.reporter.warning(
@@ -500,6 +509,7 @@ class MarkdownParser(parsers.Parser):
     def visit_img(self, node):
         image = nodes.image()
         image['uri'] = node.attrib.pop('src', '')
+        # image['uri'] = "/fixed/image.png"
         alt = node.attrib.pop('alt', '')
         if alt:
             image += nodes.Text(alt)
@@ -547,17 +557,20 @@ class MarkdownParser(parsers.Parser):
         parent = self.parse_stack_r[-1]
         if node.text:
             node.text = html.unescape(node.text)
-        if len(parent) == 1 and parent.tag == "p" and not parent.text:
+        if len(parent) == 1 and parent.tag in ("p", "pre") and not parent.text:
             x = self.pop_node()
-            assert isinstance(x, nodes.paragraph)
+            assert isinstance(x, nodes.paragraph) or isinstance(
+                x, nodes.literal_block)
             block = nodes.literal_block()
             # note: this isn't yet activated because fenced_code extension
             # outputs raw html block, not a regular markdown ast tree. instead
             # what is actually run is the hacky workaround in append_text
-            lang = node.attrib.get("class", "")
+            lang = node.attrib.get("class", "").replace("language-", "")
             if lang:
                 node.attrib.pop("class")
                 block["language"] = lang
+            else:
+                block["language"] = "text"
             return block
         else:
             return nodes.literal()
