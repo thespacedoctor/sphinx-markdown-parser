@@ -141,6 +141,12 @@ class MarkdownParser(parsers.Parser):
         # regex = re.compile(r'\[\[(.*?)\]\]')
         # inputstring = regex.sub(r"£££££\1£££££", inputstring)
 
+        # LINK FIXES - INSIDE NON TEXT TAGS E.G. TABLE CELL
+        regex = re.compile(r'\|([^\|\n]*\[[^\]]*\]\(\S*\)[^\|\n]*)\|')
+        inputstring = regex.sub(r"| <p>\1</p> |", inputstring)
+        regex = re.compile(r'\n\: (.*)')
+        inputstring = regex.sub(r"\n: <p>\1</p>", inputstring)
+
         # ALLOW FOR CITATIONS TO SEMI-WORK (AS FOOTNOTES)
         regex = re.compile(r'\[#(.*?)\]')
         inputstring = regex.sub(r"[^cite\1]", inputstring)
@@ -468,6 +474,7 @@ class MarkdownParser(parsers.Parser):
         #     if len(href.split(".")[-1]) > 3:
         #         href = href + ".html"
         reference['refuri'] = href
+
         return reference
 
     def visit_ol(self, node):
@@ -526,6 +533,30 @@ class MarkdownParser(parsers.Parser):
             node.text = html.unescape("placeholder")
         return self.get_node_raw_html(node)
 
+    def visit_code(self, node):
+        parent = self.parse_stack_r[-1]
+        if node.text:
+            node.text = html.unescape(node.text)
+
+        if len(parent) == 1 and parent.tag in ("p", "pre") and not parent.text:
+
+            x = self.pop_node()
+            assert isinstance(x, nodes.paragraph) or isinstance(
+                x, nodes.literal_block)
+            block = nodes.literal_block()
+            # note: this isn't yet activated because fenced_code extension
+            # outputs raw html block, not a regular markdown ast tree. instead
+            # what is actually run is the hacky workaround in append_text
+            lang = node.attrib.get("class", "").replace("language-", "")
+            if lang:
+                node.attrib.pop("class")
+                block["language"] = lang
+            else:
+                block["language"] = "text"
+            return block
+        else:
+            return nodes.literal()
+
     def visit_table(self, node):
         # docutils html writer crashes without tgroup/colspec
         table = nodes.table()
@@ -552,28 +583,6 @@ class MarkdownParser(parsers.Parser):
 
     def visit_td(self, node):
         return nodes.entry()
-
-    def visit_code(self, node):
-        parent = self.parse_stack_r[-1]
-        if node.text:
-            node.text = html.unescape(node.text)
-        if len(parent) == 1 and parent.tag in ("p", "pre") and not parent.text:
-            x = self.pop_node()
-            assert isinstance(x, nodes.paragraph) or isinstance(
-                x, nodes.literal_block)
-            block = nodes.literal_block()
-            # note: this isn't yet activated because fenced_code extension
-            # outputs raw html block, not a regular markdown ast tree. instead
-            # what is actually run is the hacky workaround in append_text
-            lang = node.attrib.get("class", "").replace("language-", "")
-            if lang:
-                node.attrib.pop("class")
-                block["language"] = lang
-            else:
-                block["language"] = "text"
-            return block
-        else:
-            return nodes.literal()
 
     def visit_pre(self, node):
         if node.text:

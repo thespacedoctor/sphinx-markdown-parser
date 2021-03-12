@@ -523,34 +523,34 @@
 			"file": "sphinx_markdown_parser/markdown_parser.py",
 			"settings":
 			{
-				"buffer_size": 20052,
+				"buffer_size": 20576,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "sphinx_markdown_parser/parser.py",
+			"contents": "Searching 22 files for \"HTML5Translator\"\n\n/Users/Dave/anaconda/envs/soxspipe/lib/python3.7/site-packages/sphinx/writers/html5.py:\n   51  \n   52  \n   53: class HTML5Translator(SphinxTranslator, BaseTranslator):\n   54      \"\"\"\n   55      Our custom HTML translator.\n   ..\n   62              document, builder = args\n   63          else:\n   64:             warnings.warn('The order of arguments for HTML5Translator has been changed. '\n   65                            'Please give \"document\" as 1st and \"builder\" as 2nd.',\n   66                            RemovedInSphinx40Warning, stacklevel=2)\n\n2 matches in 1 file\n",
 			"settings":
 			{
-				"buffer_size": 92,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 21 files for \"replace\"\n\n/Users/Dave/git_repos/_vendor_/sphinx-markdown-parser/docs/conf.py:\n   61  github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/docs/'\n   62  \n   63: # The version info for the project you're documenting, acts as replacement for\n   64  # |version| and |release|, also used in various other places throughout the\n   65  # built documents.\n\n/Users/Dave/git_repos/_vendor_/sphinx-markdown-parser/sphinx_markdown_parser/commonmark_parser.py:\n  138          # TODO this should probably only remove the extension for local paths,\n  139          # i.e. not uri's starting with http or other external prefix.\n  140:         if ext.replace('.', '') in self.supported:\n  141:             destination = destination.replace(ext, '')\n  142          ref_node['refuri'] = destination\n  143          # TODO okay, so this is acutally not always the right line number, but\n\n/Users/Dave/git_repos/_vendor_/sphinx-markdown-parser/sphinx_markdown_parser/markdown_parser.py:\n   22  a, bdo, br, img, map, object, q, script, span, sub, sup\n   23  button, input, label, select, textarea\n   24: \"\"\".replace(\",\", \"\").split())\n   25  INVALID_ANCHOR_CHARS = re.compile(\n   26      \"[^-_:.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]\")\n   ..\n  131          frontmatter = self.get_frontmatter(inputstring)\n  132  \n  133:         inputstring = inputstring.replace(\"{{TOC}}\", \"1234TOC1234\")\n  134  \n  135          # ALLOW FOR MMD STYLE SUP/SUB-SCRIPTS\n  ...\n  192      def prep_raw_html(self):\n  193          # code adapted from markedown.core.RawHtmlPostprocessor\n  194:         replacements = OrderedDict()\n  195          for i in range(self.md.htmlStash.html_counter):\n  196              html = self.md.htmlStash.rawHtmlBlocks[i]\n  197              if self.isblocklevel(html):\n  198:                 replacements[\"<p>%s</p>\" %\n  199                               (self.md.htmlStash.get_placeholder(i))] = \\\n  200                      html + \"\\n\"\n  201:             replacements[self.md.htmlStash.get_placeholder(i)] = html\n  202:         self.raw_html = replacements\n  203:         if replacements:\n  204              self.raw_html_k = re.compile(\n  205                  \"(\" + \"|\".join(re.escape(k) for k in self.raw_html) + \")\")\n\n/Users/Dave/git_repos/_vendor_/sphinx-markdown-parser/sphinx_markdown_parser/transform.py:\n   98              os.path.exists(abspath) and abspath.startswith(self.root_dir)\n   99          ):\n  100:             # REPLACE THE PATH SEPARATOR IF RUNNING ON NON-UNIX ENVIRONMENT\n  101              if os.path.sep != '/':\n  102:                 relpath = relpath.replace(os.path.sep, '/')\n  103              docpath = '/' + relpath.rsplit('.', 1)[0]\n  104              # REWRITE SUFFIX TO HTML, THIS IS SUBOPTIMAL\n  ...\n  197                  'numbered': numbered\n  198              },\n  199:             content=['%s <%s>' % (k, v.replace(\".html\", \"\")) for k, v in refs]\n  200          )\n  201  \n  ...\n  295          return None\n  296  \n  297:     def find_replace(self, node):\n  298:         \"\"\"Try to find replace node for current node.\n  299  \n  300          Parameters\n  301          ----------\n  302          node : docutil node\n  303:             Node to find replacement for.\n  304  \n  305          Returns\n  306          -------\n  307          nodes : node or list of node\n  308:             The replacement nodes of current node.\n  309:             Returns None if no replacement can be found.\n  310          \"\"\"\n  311          newnode = None\n  ...\n  329                  self.current_level = node['level']\n  330          to_visit = []\n  331:         to_replace = []\n  332          for c in node.children[:]:\n  333:             newnode = self.find_replace(c)\n  334              if newnode is not None:\n  335:                 to_replace.append((c, newnode))\n  336              else:\n  337                  to_visit.append(c)\n  338  \n  339:         for oldnode, newnodes in to_replace:\n  340:             node.replace(oldnode, newnodes)\n  341  \n  342          for child in to_visit:\n\n23 matches across 4 files\n",
-			"settings":
-			{
-				"buffer_size": 4080,
+				"buffer_size": 614,
 				"line_ending": "Unix",
 				"name": "Find Results",
 				"scratch": true
 			}
 		},
 		{
-			"file": "sphinx_markdown_parser/transform.py",
+			"file": "sphinx_markdown_parser/states.py",
 			"settings":
 			{
-				"buffer_size": 12731,
+				"buffer_size": 4289,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/Dave/anaconda/envs/soxspipe/lib/python3.7/site-packages/sphinx/writers/html5.py",
+			"settings":
+			{
+				"buffer_size": 31468,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1106,6 +1106,8 @@
 	],
 	"file_history":
 	[
+		"/Users/Dave/git_repos/_vendor_/sphinx-markdown-parser/sphinx_markdown_parser/transform.py",
+		"/Users/Dave/anaconda/envs/test/lib/python3.7/site-packages/docutils/writers/docutils_xml.py",
 		"/Users/Dave/git_repos/_packages_/python/soxspipe/docs/source/utils/index.md",
 		"/Users/Dave/git_repos/_packages_/python/soxspipe/docs/source/files/pinhole_map.md",
 		"/Users/Dave/git_repos/_packages_/python/soxspipe/docs/source/files/dispersion_map.md",
@@ -1231,13 +1233,11 @@
 		"/Users/Dave/git_repos/_packages_/python/soxspipe/README.md",
 		"/Users/Dave/git_repos/_packages_/python/soxspipe/docs/source/_static/whistles-theme/Contents/Resources/dryx.css",
 		"/Users/Dave/git_repos/_packages_/python/soxspipe/soxspipe/utKit.py",
-		"/Users/Dave/git_repos/_packages_/python/soxspipe/docs/source/_static/pygments.css",
-		"/Users/Dave/git_repos/_services_/ansible-playbooks/setup-marshall-webserver.yml",
-		"/Users/Dave/git_repos/_packages_/python/soxspipe/setup.py"
+		"/Users/Dave/git_repos/_packages_/python/soxspipe/docs/source/_static/pygments.css"
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 40.0
 	},
 	"find_in_files":
 	{
@@ -1253,6 +1253,55 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"HTML5Translator",
+			"print",
+			"HEREEEEEEEEEEE",
+			"print",
+			"prep_raw_html",
+			"node",
+			"append_text",
+			"len(parent) == 1",
+			"node.",
+			"node.ht",
+			"node.",
+			"t_a",
+			"_a",
+			"link",
+			"anch",
+			"liter",
+			"print",
+			"vcs_pageview_mode",
+			"HTML5Translator",
+			"Could not ",
+			"Could not lex literal_block",
+			"refer",
+			"print",
+			"auto_code_block",
+			"pre",
+			"print",
+			"block",
+			"prep_raw_html",
+			"raw_ht",
+			"walk_markdown_ast",
+			"append_text",
+			"visit",
+			"walk_markdown_ast",
+			"prep_raw_html",
+			"isblocklevel",
+			"rawHtmlBlocks",
+			"self.md.htmlStash",
+			"prep_raw_html",
+			"htmlStash",
+			"prep_raw_html",
+			"tree",
+			"self.md",
+			"prep_raw_html",
+			"walk_markdown_ast",
+			"prep_raw_html",
+			"append_text",
+			"prep_raw_html",
+			"Markdown",
+			"MarkdownParser",
 			"replace",
 			"wzxhzdk",
 			"code",
@@ -1284,15 +1333,150 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 20052,
+						"buffer_size": 20576,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6538,
-								6538
+								4537,
+								4537
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4537,
+										4538
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"region.bluish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4531,
+										4532
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2292.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 614,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										159,
+										174
+									],
+									[
+										396,
+										411
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								335,
+								335
 							]
 						],
 						"settings":
@@ -1316,21 +1500,41 @@
 							},
 							"bracket_highlighter.regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
@@ -1341,55 +1545,42 @@
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
-								"bh_double_quote_content"
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
 							],
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"default_dir": "/Users/Dave/git_repos/_vendor_/sphinx-markdown-parser/sphinx_markdown_parser",
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4331.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "sphinx_markdown_parser/parser.py",
+					"buffer": 2,
+					"file": "sphinx_markdown_parser/states.py",
 					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 92,
+						"buffer_size": 4289,
 						"regions":
 						{
 						},
@@ -1421,228 +1612,41 @@
 							},
 							"bracket_highlighter.regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content"
-							],
-							"syntax": "Packages/Python/Python.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4080,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										262,
-										269
-									],
-									[
-										672,
-										679
-									],
-									[
-										753,
-										760
-									],
-									[
-										1122,
-										1129
-									],
-									[
-										1392,
-										1399
-									],
-									[
-										1615,
-										1622
-									],
-									[
-										1838,
-										1845
-									],
-									[
-										2003,
-										2010
-									],
-									[
-										2092,
-										2099
-									],
-									[
-										2123,
-										2130
-									],
-									[
-										2480,
-										2487
-									],
-									[
-										2625,
-										2632
-									],
-									[
-										2894,
-										2901
-									],
-									[
-										3020,
-										3027
-									],
-									[
-										3071,
-										3078
-									],
-									[
-										3229,
-										3236
-									],
-									[
-										3367,
-										3374
-									],
-									[
-										3440,
-										3447
-									],
-									[
-										3626,
-										3633
-									],
-									[
-										3720,
-										3727
-									],
-									[
-										3800,
-										3807
-									],
-									[
-										3947,
-										3954
-									],
-									[
-										3980,
-										3987
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								1844,
-								1844
-							]
-						],
-						"settings":
-						{
-							"apply_syntax_touched": true,
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-									"1":
-									[
-										2456,
-										2457
-									]
-								}
-							},
-							"bracket_highlighter.regions":
-							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
@@ -1653,148 +1657,16 @@
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content"
-							],
-							"default_dir": "/Users/Dave/git_repos/_vendor_/sphinx-markdown-parser/sphinx_markdown_parser",
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 10.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "sphinx_markdown_parser/transform.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12731,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2512,
-								2512
-							]
-						],
-						"settings":
-						{
-							"apply_syntax_touched": true,
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
 								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
 							],
 							"syntax": "Packages/Python/Python.sublime-syntax",
 							"tab_size": 4,
@@ -1805,6 +1677,176 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Users/Dave/anaconda/envs/soxspipe/lib/python3.7/site-packages/sphinx/writers/html5.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 31468,
+						"regions":
+						{
+							"col_11000011":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										5622,
+										5627
+									]
+								],
+								"scope": "col_11000011"
+							},
+							"col_11000011_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_11000011_circle.png",
+								"regions":
+								[
+									[
+										5558,
+										5558
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_116600FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										25227,
+										25231
+									]
+								],
+								"scope": "col_116600FF"
+							},
+							"col_116600FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_116600FF_circle.png",
+								"regions":
+								[
+									[
+										25188,
+										25188
+									]
+								],
+								"scope": "col_gutter"
+							}
+						},
+						"selection":
+						[
+							[
+								1517,
+								1532
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1565,
+										1566
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1532,
+										1533
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -2398,6 +2440,14 @@
 			[
 				"soxs",
 				"~/git_repos/_packages_/python/soxspipe/soxspipe.sublime-project"
+			],
+			[
+				"soxsp",
+				"~/git_repos/_packages_/python/soxspipe/soxspipe.sublime-project"
+			],
+			[
+				"ansib",
+				"~/git_repos/_services_/ansible-playbooks/ansible-playbooks.sublime-project"
 			],
 			[
 				"ansi",
