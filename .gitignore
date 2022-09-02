@@ -116,3 +116,4 @@ dmypy.json
 .pyre/
 
 docs/build
+/sphinx_markdown_parser.sublime-workspace

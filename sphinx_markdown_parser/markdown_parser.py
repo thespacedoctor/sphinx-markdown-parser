@@ -34,6 +34,7 @@ def to_html_anchor(s):
         s = "-" + s
     return INVALID_ANCHOR_CHARS.sub("-", s.lower())
 
+
 IGNORE_ALL_CHILDREN = object()
 
 
@@ -49,7 +50,7 @@ class Markdown(markdown.Markdown):
             return ''  # a blank unicode string
 
         try:
-            source = util.text_type(source)
+            source = str(source)
         except UnicodeDecodeError as e:  # pragma: no cover
             # Customise error message while maintaining original trackback
             e.reason += '. -- Note: Markdown only accepts unicode input!'
