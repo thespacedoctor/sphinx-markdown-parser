@@ -6,7 +6,7 @@ from docutils import parsers, nodes
 import html
 import markdown
 from markdown import util
-
+import os
 from pydash import _
 import re
 import yaml
@@ -137,6 +137,13 @@ class MarkdownParser(parsers.Parser):
         inputstring = regex.sub(r"\1~\2~\3", inputstring)
         regex = re.compile(r'([!\^]*\S)\^(\S)([!\^]*\n)')
         inputstring = regex.sub(r"\1^\2^\3", inputstring)
+
+        # REPLACE ENV VARIABLES
+        regex = re.compile(r'(\{\%(\w+)\%\})')
+        matchList = regex.findall(inputstring)
+        for m in matchList:
+            envVar = os.getenv(m[1].strip(), '')
+            inputstring = inputstring.replace(m[0], envVar)
 
         # ALLOW FOR SPHINX :any: ROLE
         # regex = re.compile(r'\[\[(.*?)\]\]')
