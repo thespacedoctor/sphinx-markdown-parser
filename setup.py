@@ -1,16 +1,16 @@
 from codecs import open
 from os import path
 from setuptools import setup, find_packages
-from subprocess import check_output
+# from subprocess import check_output
 import sphinx_markdown_parser
 
 here = path.abspath(path.dirname(__file__))
 
-check_output(
-    'pandoc --from=markdown --to=rst --output=' +
-    path.join(here, 'README.rst') + ' ' + path.join(here, 'README.md'),
-    shell=True
-)
+# check_output(
+#     'pandoc --from=markdown --to=rst --output=' +
+#     path.join(here, 'README.rst') + ' ' + path.join(here, 'README.md'),
+#     shell=True
+# )
 
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
