@@ -1,16 +1,10 @@
 from codecs import open
 from os import path
 from setuptools import setup, find_packages
-# from subprocess import check_output
 import sphinx_markdown_parser
 
 here = path.abspath(path.dirname(__file__))
 
-# check_output(
-#     'pandoc --from=markdown --to=rst --output=' +
-#     path.join(here, 'README.rst') + ' ' + path.join(here, 'README.md'),
-#     shell=True
-# )
 
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
@@ -19,6 +13,16 @@ install_requires = list()
 with open(path.join(here, 'requirements.txt'), 'r', encoding='utf-8') as f:
     for line in f.readlines():
         install_requires.append(line)
+
+# READ THE DOCS SERVERS
+exists = os.path.exists("/home/docs/")
+if exists:
+    from subprocess import check_output
+    check_output(
+        'pandoc --from=markdown --to=rst --output=' +
+        path.join(here, 'README.rst') + ' ' + path.join(here, 'README.md'),
+        shell=True
+    )
 
 setup(
     name='sphinx_markdown_parser',
