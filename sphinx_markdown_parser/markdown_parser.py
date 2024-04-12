@@ -20,7 +20,7 @@ TAGS_INLINE = set("""
 b, big, i, small, tt
 abbr, acronym, cite, code, dfn, em, kbd, strong, samp, var
 a, bdo, br, img, map, object, q, script, span, sub, sup
-button, input, label, select, textarea
+button, input, label, select, textarea, caption
 """.replace(",", "").split())
 INVALID_ANCHOR_CHARS = re.compile(
     "[^-_:.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]")
@@ -94,6 +94,17 @@ class Markdown(markdown.Markdown):
         # Run the text post-processors
         for pp in self.postprocessors:
             output = pp.run(output)
+
+        # CLEAN UP OUTPUT HTML
+
+        # TABLE CAPTIONS
+        regex = re.compile(r'<tr>\s*<td>\[(?P<caption>.*?)\](\[(?P<label>.*?)\])?</td>\s*(<td></td>\s*)+</tr>\s*</tbody>', re.S)
+        thisIter = regex.finditer(output)
+        for item in thisIter:
+            thisMatch = item.group()
+            thisReplace = f'</tbody>\n<caption style="caption-side: bottom;">{item.group("caption")}</caption>'
+            output = output.replace(thisMatch, thisReplace)
+            print(output)
 
         # CONVERT THE HTML BACK TO ROOT
         parser = etree.HTMLParser()
@@ -412,6 +423,9 @@ class MarkdownParser(parsers.Parser):
         return self.get_node_raw_html(node)
 
     def visit_del(self, node):
+        return self.get_node_raw_html(node)
+
+    def visit_caption(self, node):
         return self.get_node_raw_html(node)
 
     def visit_mark(self, node):

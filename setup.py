@@ -24,6 +24,7 @@ if exists:
         shell=True
     )
 
+
 setup(
     name='sphinx_markdown_parser',
     version=sphinx_markdown_parser.__version__,
