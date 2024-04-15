@@ -20,7 +20,7 @@ TAGS_INLINE = set("""
 b, big, i, small, tt
 abbr, acronym, cite, code, dfn, em, kbd, strong, samp, var
 a, bdo, br, img, map, object, q, script, span, sub, sup
-button, input, label, select, textarea, caption
+button, input, label, select, textarea, caption, figure, figcaption
 """.replace(",", "").split())
 INVALID_ANCHOR_CHARS = re.compile(
     "[^-_:.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]")
@@ -104,7 +104,15 @@ class Markdown(markdown.Markdown):
             thisMatch = item.group()
             thisReplace = f'</tbody>\n<caption style="caption-side: bottom;">{item.group("caption")}</caption>'
             output = output.replace(thisMatch, thisReplace)
-            print(output)
+
+        # IMAGE CAPTIONS
+        # <img alt="The workflow for the soxs mbias recipe|fig:soxs_mbias_workflow" src="../_images/soxs_mbias.png">
+        regex = re.compile(r'<img alt="(?P<caption>[^"]+?)" (?P<image>.*?)>')
+        thisIter = regex.finditer(output)
+        for item in thisIter:
+            thisMatch = item.group()
+            thisReplace = f'<figure><img {item.group("image")}><figcaption>{item.group("caption")}</figcaption></figure>'
+            output = output.replace(thisMatch, thisReplace)
 
         # CONVERT THE HTML BACK TO ROOT
         parser = etree.HTMLParser()
@@ -537,11 +545,16 @@ class MarkdownParser(parsers.Parser):
 
     def visit_img(self, node):
         image = nodes.image()
-        image['uri'] = node.attrib.pop('src', '')
-        # image['uri'] = "/fixed/image.png"
-        alt = node.attrib.pop('alt', '')
-        if alt:
-            image += nodes.Text(alt)
+        src = node.attrib.get('src', '')
+
+        if src:
+            image['uri'] = src
+
+        title = node.attrib.get('title', '')
+        alt = node.attrib.get('alt', '')
+
+        image['alt'] = alt
+
         return image
 
     def visit_hr(self, node):
@@ -549,6 +562,17 @@ class MarkdownParser(parsers.Parser):
 
     def visit_blockquote(self, node):
         return nodes.block_quote()
+
+    def visit_figure(self, node):
+        return nodes.figure()
+
+    def visit_figcaption(self, node):
+        htmlText = html.unescape(node.text)
+        htmlText = f"<figcaption>"
+
+        figcaption = nodes.raw(
+            '', htmlText, format='html')
+        return figcaption
 
     def visit_iframe(self, node):
         if not node.text:
